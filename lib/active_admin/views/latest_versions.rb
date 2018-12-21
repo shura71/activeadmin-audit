@@ -17,11 +17,13 @@ module ActiveAdmin
             end
             column :created_at
             column :actions do |version|
-              link_to 'View', admin_content_version_path(version)
+              div class: 'table_actions' do
+                link_to 'View', admin_content_version_path(version)
+              end
             end
           end
 
-          div do
+          div style: 'padding: 8px 16px' do
             link_to 'View all versions', admin_content_versions_path({
               'q[item_type_eq]' => resource.class.name,
               'q[item_id_eq]' => resource.id,

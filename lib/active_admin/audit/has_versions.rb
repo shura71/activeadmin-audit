@@ -4,7 +4,9 @@ module ActiveAdmin
   module Audit
     module HasVersions
       extend ActiveSupport::Concern
-
+      
+      RAILS_GTE_5_1 = ::ActiveRecord.gem_version >= ::Gem::Version.new("5.1.0.beta1")   
+      
       module ClassMethods
         def has_versions(options = {})
           options[:also_include] ||= {}
@@ -97,11 +99,12 @@ module ActiveAdmin
       private
 
       def cache_version_object
-        @version_object_cache ||= paper_trail.object_attrs_for_paper_trail
+        @version_object_cache ||= paper_trail.object_attrs_for_paper_trail(false)
       end
 
       def cache_version_object_changes
-        @version_object_changes_cache ||= paper_trail.changes
+        record = paper_trail.instance_variable_get(:@record)
+        @version_object_changes_cache ||= (RAILS_GTE_5_1 ? record.saved_changes : record.changes)
       end
 
       def cache_version_additional_objects_and_changes
@@ -119,7 +122,7 @@ module ActiveAdmin
           event: @event_for_paper_trail,
           object: cache_version_object.to_json,
           object_changes: cache_version_object_changes.to_json,
-          whodunnit: PaperTrail.whodunnit.try(:id),
+          whodunnit: PaperTrail.request.whodunnit.try(:id),
           item_type: self.class.name,
           item_id: id,
         }

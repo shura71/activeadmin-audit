@@ -9,14 +9,14 @@ module ActiveAdmin
         PaperTrail.serializer = PaperTrail::Serializers::JSON
 
         app_path = File.expand_path('../../../../app/admin', __FILE__)
-        ActiveAdmin.application.load_paths.unshift(app_path)
-
+        ActiveAdmin.setup { |config| config.load_paths = [app_path] + config.load_paths }
+        
         module ActiveAdmin::ViewHelpers
           include ActiveAdmin::VersionsHelper
         end
 
         ActiveAdmin.before_load do |config|
-          config.before_action :set_paper_trail_whodunnit
+          config.before_action :set_paper_trail_whodunnit 
         end
       end
 
