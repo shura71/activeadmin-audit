@@ -120,8 +120,8 @@ module ActiveAdmin
       def generate_version!
         data = {
           event: @event_for_paper_trail,
-          object: cache_version_object.to_json,
-          object_changes: cache_version_object_changes.to_json,
+          object: cache_version_object.map {|v| v[1] = v[1].force_encoding('UTF-8') if v[1].kind_of?(String)}.to_json,
+          object_changes: cache_version_object_changes.map {|v| v[1] = v[1].force_encoding('UTF-8') if v[1].kind_of?(String)}.to_json,
           whodunnit: PaperTrail.request.whodunnit.try(:id),
           item_type: self.class.name,
           item_id: id,
